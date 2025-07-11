@@ -17,10 +17,16 @@ from config.settings import settings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize services
+gmail_service = GmailService()
+policy_service = PolicyService()
+response_generator = ResponseGenerator()
+cache_service = CacheService()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup event
-    await gmail_service.initialize()
+    # await gmail_service.initialize()
     await policy_service.load_policies()
     await cache_service.initialize()
     logger.info("Auto Email Responder started successfully")
@@ -30,7 +36,12 @@ async def lifespan(app: FastAPI):
     # Shutdown event (if needed)
     # Add any cleanup code here
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title="Auto Email Responder",
+    description="Intelligent email response system with Gmail integration",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
 # Add CORS middleware
 app.add_middleware(
@@ -40,12 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Initialize services
-gmail_service = GmailService()
-policy_service = PolicyService()
-response_generator = ResponseGenerator()
-cache_service = CacheService()
 
 # Pydantic models
 class EmailRequest(BaseModel):

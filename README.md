@@ -39,6 +39,12 @@ auto-email-responder/
 │   ├── policy_service.py      # Company policies management
 │   ├── response_generator.py  # AI response generation
 │   └── cache_service.py       # Redis caching service
+├── frontend/                  # Frontend application
+│   ├── index.html             # Main HTML file
+│   ├── api.js                 # API integration
+│   ├── app.js                 # UI interactions
+│   ├── server.js              # Simple Express server
+│   └── package.json           # Frontend dependencies
 └── tests/                     # Test files
 ```
 
@@ -120,7 +126,23 @@ redis-server
 
 ## Usage
 
-### Start the Application
+### Quick Start (Recommended)
+
+For Windows users:
+```bash
+# Run the batch file to start both servers
+start_servers.bat
+```
+
+For Linux/Mac users:
+```bash
+# Run the shell script to start both servers
+./start_servers.sh
+```
+
+### Manual Start
+
+#### Start the Backend Application
 
 ```bash
 # Development
@@ -129,6 +151,54 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 # Production
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
+
+#### Start the Frontend Application
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start the frontend server
+npm start
+```
+
+The frontend will be available at http://localhost:3000
+
+### Troubleshooting Connection Issues
+
+If you see "ERR_CONNECTION_REFUSED" or "Server Disconnected" errors:
+
+1. **Make sure the backend server is running first**:
+   ```bash
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+2. **Check if the backend is accessible**:
+   - Visit http://localhost:8000/health in your browser
+   - You should see a health check response
+
+3. **Verify Redis is running** (if using caching):
+   ```bash
+   # Using Docker
+   docker run -d -p 6379:6379 redis:7-alpine
+   
+   # Or locally
+   redis-server
+   ```
+
+4. **Check the frontend server status indicator**:
+   - The frontend shows a server status indicator in the top-right corner
+   - 🟢 Green = Connected
+   - 🔴 Red = Disconnected
+
+5. **Common fixes**:
+   - Restart both backend and frontend servers
+   - Check if ports 8000 and 3000 are available
+   - Ensure all dependencies are installed
+   - Check the console for detailed error messages
 
 ### Using Docker
 
@@ -233,14 +303,22 @@ The application requires the following Gmail API scopes:
 2. **Policy Service**: Manages company policies with vector search capabilities
 3. **Response Generator**: Uses LangChain and OpenAI to generate intelligent responses
 4. **Cache Service**: Redis-based caching for policies and responses
+5. **Frontend**: Web-based user interface for interacting with the system
 
 ### Data Flow
 
+#### Backend Flow
 1. Email received/requested → Gmail Service
 2. Content analyzed → Policy Service (semantic search)
 3. Relevant policies retrieved → Response Generator
 4. AI response generated → Cache Service (optional)
 5. Email sent → Gmail Service
+
+#### Frontend Flow
+1. User interacts with UI → Frontend
+2. API request sent → Backend API
+3. Backend processes request → Response returned
+4. Response displayed → Frontend UI
 
 ## Testing
 
@@ -332,5 +410,8 @@ For support and questions:
 - [ ] Advanced email templates
 - [ ] Machine learning-based response optimization
 - [ ] Multi-language support
+- [ ] Enhanced frontend with real-time updates
+- [ ] Mobile-responsive design improvements
+- [ ] User authentication and role-based access
 - [ ] Analytics and reporting dashboard
 - [ ] Integration with CRM systems

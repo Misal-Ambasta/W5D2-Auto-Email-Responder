@@ -70,3 +70,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# scripts
+*.sh
+*.bat
+frontend/node_modules/
